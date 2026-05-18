@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "WebFetch(domain:docs.anthropic.com)",
+      "WebFetch(domain:www.npmjs.com)",
+      "Bash(npm search *)",
+      "Read(//c/Users/admin/.claude/**)",
+      "Bash(npm view *)",
+      "Bash(npm install *)",
+      "Bash(npx claude-code *)",
+      "Bash(npx @anthropic-ai/claude-code skills)",
+      "Bash(winget install *)",
+      "Bash(gh search *)",
+      "Bash(git status *)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(git add *)",
+      "Bash(git commit *)"
+    ]
+  }
+}
