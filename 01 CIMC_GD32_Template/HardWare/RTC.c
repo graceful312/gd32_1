@@ -118,7 +118,7 @@ static void rtc_first_setup(void)
     rtc_time_para.year         = 0x25;           /* 2025年（BCD） */
     rtc_time_para.month        = RTC_JAN;        /* 1月 */
     rtc_time_para.date         = 0x01;           /* 1日（BCD） */
-    rtc_time_para.day_of_week  = RTC_WEDNESDAY;  /* 星期三 */
+    rtc_time_para.day_of_week  = RTC_WEDSDAY;    /* 星期三 */
     rtc_time_para.hour         = 0x00;           /* 0时（BCD） */
     rtc_time_para.minute       = 0x00;           /* 0分（BCD） */
     rtc_time_para.second       = 0x00;           /* 0秒（BCD） */
@@ -127,9 +127,9 @@ static void rtc_first_setup(void)
 
     /* 写入RTC寄存器（进入配置模式 → 写预分频+时间 → 退出配置模式） */
     if (ERROR == rtc_init(&rtc_time_para)) {
-        printf("\r\n[RTC] 首次配置失败!\r\n");
+        printf("\r\n[RTC] First config failed!\r\n");
     } else {
-        printf("\r\n[RTC] 首次配置成功: 2025-01-01 00:00:00\r\n");
+        printf("\r\n[RTC] First config OK: 2025-01-01 00:00:00\r\n");
         /* 写入标记值到备份寄存器0，表示RTC已配置过 */
         RTC_BKP0 = RTC_BKP_FLAG;
     }
@@ -169,9 +169,9 @@ void RTC_Init(void)
         /* RTC已配置过且时钟源有效，无需重新配置 */
         /* 检测复位来源 */
         if (RESET != rcu_flag_get(RCU_FLAG_PORRST)) {
-            printf("[RTC] 上电复位，RTC保持运行\r\n");
+            printf("[RTC] Power-on reset, RTC running\r\n");
         } else if (RESET != rcu_flag_get(RCU_FLAG_EPRST)) {
-            printf("[RTC] 外部复位，RTC保持运行\r\n");
+            printf("[RTC] External reset, RTC running\r\n");
         }
         /* 读取并显示当前时间 */
         RTC_PrintTime();
@@ -218,9 +218,9 @@ void RTC_SetTime(uint8_t year, uint8_t month, uint8_t date,
 
     /* 写入RTC */
     if (ERROR == rtc_init(&rtc_time_para)) {
-        printf("[RTC] 时间设置失败!\r\n");
+        printf("[RTC] Time set failed!\r\n");
     } else {
-        printf("[RTC] 时间已设置: 20%02X-%02X-%02X %02X:%02X:%02X\r\n",
+        printf("[RTC] Time set: 20%02X-%02X-%02X %02X:%02X:%02X\r\n",
                rtc_time_para.year, rtc_time_para.month, rtc_time_para.date,
                rtc_time_para.hour, rtc_time_para.minute, rtc_time_para.second);
         RTC_BKP0 = RTC_BKP_FLAG;
@@ -251,7 +251,7 @@ void RTC_PrintTime(void)
 {
     rtc_current_time_get(&rtc_time_para);
 
-    printf("[RTC] 当前时间: 20%02X-%02X-%02X %02X:%02X:%02X\r\n",
+    printf("[RTC] Now: 20%02X-%02X-%02X %02X:%02X:%02X\r\n",
            rtc_time_para.year, rtc_time_para.month, rtc_time_para.date,
            rtc_time_para.hour, rtc_time_para.minute, rtc_time_para.second);
 }
@@ -288,7 +288,7 @@ void RTC_SetAlarm0(uint8_t date, uint8_t hour, uint8_t minute, uint8_t second)
     /* 使能闹钟0 */
     rtc_alarm_enable(RTC_ALARM0);
 
-    printf("[RTC] 闹钟0已设置: %02X:%02X:%02X\r\n", hour, minute, second);
+    printf("[RTC] Alarm0 set: %02X:%02X:%02X\r\n", hour, minute, second);
 }
 
 /*!
@@ -316,7 +316,7 @@ void RTC_SetAlarm1(uint8_t date, uint8_t hour, uint8_t minute, uint8_t second)
     rtc_interrupt_enable(RTC_INT_ALARM1);
     rtc_alarm_enable(RTC_ALARM1);
 
-    printf("[RTC] 闹钟1已设置: %02X:%02X:%02X\r\n", hour, minute, second);
+    printf("[RTC] Alarm1 set: %02X:%02X:%02X\r\n", hour, minute, second);
 }
 
 /*!
@@ -328,7 +328,7 @@ void RTC_SetAlarm1(uint8_t date, uint8_t hour, uint8_t minute, uint8_t second)
 void RTC_PrintAlarm0(void)
 {
     rtc_alarm_get(RTC_ALARM0, &rtc_alarm_para);
-    printf("[RTC] 闹钟0: %02X:%02X:%02X\r\n",
+    printf("[RTC] Alarm0: %02X:%02X:%02X\r\n",
            rtc_alarm_para.alarm_hour, rtc_alarm_para.alarm_minute, rtc_alarm_para.alarm_second);
 }
 
@@ -341,7 +341,7 @@ void RTC_PrintAlarm0(void)
 void RTC_PrintAlarm1(void)
 {
     rtc_alarm_get(RTC_ALARM1, &rtc_alarm_para);
-    printf("[RTC] 闹钟1: %02X:%02X:%02X\r\n",
+    printf("[RTC] Alarm1: %02X:%02X:%02X\r\n",
            rtc_alarm_para.alarm_hour, rtc_alarm_para.alarm_minute, rtc_alarm_para.alarm_second);
 }
 
@@ -367,7 +367,7 @@ void RTC_SetWakeup(uint16_t count)
     /* 使能唤醒定时器 */
     rtc_wakeup_enable();
 
-    printf("[RTC] 唤醒定时器已设置: %d 秒\r\n", count);
+    printf("[RTC] Wakeup set: %d sec\r\n", count);
 }
 
 /*!
