@@ -23,6 +23,7 @@
 #include "oled.h"
 #include "Serial.h"
 #include "ADC.h"
+#include "DAC.h"
 #include "Timer.h"
 #include "GD30AD3344.h"   /* GD30AD3344外部ADC芯片驱动 */
 #include "RTC.h"          /* RTC实时时钟模块 */

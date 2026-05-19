@@ -20,7 +20,7 @@ CIMC 2026 工业嵌入式系统开发竞赛项目，目标芯片 **GD32F470VET6*
 ```
 CMSIS/          → ARM Cortex-M4 核心头文件 + GigaDevice 设备头文件 (gd32f4xx.h)
 Library/        → GD32F4xx 标准外设库 V2.6.4（28 个外设驱动）
-HardWare/       → 板级驱动：LED、Key、OLED、Serial、ADC、Timer、GD30AD3344、RTC、SPI_Flash
+HardWare/       → 板级驱动：LED、Key、OLED、Serial、ADC、DAC、Timer、GD30AD3344、RTC、SPI_Flash
 FatFs/          → FatFs R0.09 文件系统（FatFs.c/h 封装 + ff.c/h 核心库 + diskio.c 对接 SPI Flash）
 Function/       → 应用逻辑：System_Init()、UsrFunction()
 User/           → main.c 入口、中断处理 (gd32f4xx_it.c)、systick
@@ -33,16 +33,17 @@ System/         → 空目录
 
 ### 程序入口
 
-`main()` → `System_Init()`（初始化 systick、按键、LED、OLED、USART2、Timer1、GD30AD3344、RTC、SPI_Flash、FatFs）→ `UsrFunction()`（主循环，调用 `OLED_Refresh()`）。
+`main()` → `System_Init()`（初始化 systick、按键、LED、OLED、USART2、Timer1、ADC、DAC、GD30AD3344、RTC、SPI_Flash、FatFs）→ `UsrFunction()`（主循环，调用 `OLED_Refresh()`）。
 
 ### 关键驱动
 
-- **按键** (`HardWare/Key.c`)：状态机消抖，支持单击/双击/长按/连发检测。`Key_Tick()` 由 Timer1 中断每 1ms 调用，实际 GPIO 采样间隔 20ms。用 `Key_Check(n, KEY_SINGLE | KEY_DOUBLE | KEY_LONG | KEY_REPEAT | KEY_HOLD)` 读取事件。
+- **按键** (`HardWare/Key.c`)：状态机消抖，支持单击/双击/长按/连发检测。`Key_Tick()` 由 Timer1 中断每 1ms 调用，实际 GPIO 采样间隔 20ms。当前仅 KEY3(PA6) 和 KEY4(PA7)，用 `Key_Check(n, KEY_SINGLE | KEY_DOUBLE | KEY_LONG | KEY_REPEAT | KEY_HOLD)` 读取事件。
 - **串口** (`HardWare/Serial.c`)：USART2，115200 波特率（PB10 TX，PC5 RX）。数据包协议：`$` 开头，`#` 结尾。支持 8 路数字（`D` 前缀）和模拟（`A` 前缀）传感器数据解析。
 - **OLED** (`HardWare/OLED.c`)：SPI 驱动的显示屏。主循环中调用 `OLED_Refresh()` 刷新显存。
 - **定时器** (`HardWare/Timer.c`)：Timer1，1kHz，中断中驱动 `Key_Tick()`。
 - **LED** (`HardWare/LED.h`)：4 个 LED 在 GPIOA——LED1=PA4，LED2=PA5，LED3=PA0，LED4=PA1。高电平点亮，用 `LEDx_ON()`/`LEDx_OFF()` 宏控制。
 - **ADC** (`HardWare/ADC.c`)：PC0，仅做了基本时钟配置。
+- **DAC** (`HardWare/DAC.c`)：双通道模拟输出。PA4=DAC_OUT0，PA5=DAC_OUT1。12 位精度（0~4095）。用 `DAC_SetValue(DAC_CH0, value)` 设置输出值。
 - **GD30AD3344** (`HardWare/GD30AD3344.c`)：外部 ADC 芯片，通过 SPI1（PB12~PB15）通信。CS=PB12，SPI 初始化和引脚复用配置在 `GD30AD3344_spi.h` 中以宏定义封装，修改宏即可切换 SPI 端口。
 - **RTC** (`HardWare/RTC.c`)：实时时钟模块，使用外部 32.768kHz LXTAL 晶振，预分频 1Hz。支持日历读写（BCD 编码）、闹钟 0/1（带中断）、唤醒定时器、备份寄存器。中断处理函数（`RTC_Alarm_IRQHandler`、`RTC_WKUP_IRQHandler`）直接写在 RTC.c 中，不修改 `gd32f4xx_it.c`。
 - **SPI Flash** (`HardWare/SPI_Flash.c`)：外部 NOR Flash（GD25Q40ESIGR，4Mbit/512KB），SPI1 通信。支持扇区擦除（4KB）、整片擦除、页写入（256B）、任意长度读写、ID 读取。与 GD30AD3344 共用 SPI1 总线，通过 CS 引脚区分。
@@ -53,9 +54,10 @@ System/         → 空目录
 | 外设 | 引脚 | 备注 |
 |------|------|------|
 | LED1-LED4 | PA4, PA5, PA0, PA1 | 高电平点亮 |
-| KEY1-KEY4 | PA4, PA5, PA6, PA7 | 上拉输入，低电平有效（注意 PA4/PA5 与 LED 共用） |
+| KEY3-KEY4 | PA6, PA7 | 上拉输入，低电平有效 |
 | USART2 TX/RX | PB10 / PC5 | AF7，115200 波特率 |
 | ADC | PC0 | 模拟模式 |
+| DAC OUT0/OUT1 | PA4, PA5 | 模拟输出，12 位（注意与 LED1/LED2 共用） |
 | GD30AD3344 / SPI Flash | PB13(SCK), PB14(MISO), PB15(MOSI), PB12(CS) | SPI1, AF5, **共用 CS 引脚 PB12，不能同时使用** |
 | RTC LXTAL | PC14/PC15 | 外部 32.768kHz 晶振 |
 | Timer1 | 内部 | 1kHz 中断 |
@@ -76,6 +78,20 @@ System/         → 空目录
 - 使用标准外设库（SPL），不用 HAL——外设调用统一用 `Library/GD32F4xx_standard_peripheral/` 下的 `gd32f4xx_*` 函数
 - 不要修改 `Library/` 下的 `gd32f4xx_*` 库文件和 `User/gd32f4xx_it.c`，中断处理函数写在对应模块的 `.c` 文件中
 - 所有模块 `.c` 文件只 `#include "HeaderFiles.h"`，由它统一引入所有头文件（中心辐射模式）
+  - **例外**：`FatFs.h` 未纳入 `HeaderFiles.h`，使用 FatFs 的文件需自行 `#include "../FatFs/FatFs.h"`
+
+## 自定义斜杠命令
+
+项目在 `.claude/commands/` 下配置了 6 个专用命令：
+
+| 命令 | 用途 |
+|------|------|
+| `/代码:审查模块 <名称>` | 嵌入式专项代码审查（中断安全、内存、时序、SPL 规范） |
+| `/代码:排查中断 <名称>` | 系统化排查所有中断配置、优先级、ISR 合规性 |
+| `/硬件:写驱动 <外设>` | 按项目约定生成新外设驱动框架（.c/.h + HeaderFiles.h 修改） |
+| `/硬件:检查引脚` | 扫描所有 GPIO 配置，检测引脚冲突和时钟遗漏 |
+| `/硬件:调试外设 <名称>` | 对指定外设进行配置验证和常见问题排查 |
+| `/版本:自动提交` | 分析变更并用中文格式自动提交到 Git |
 
 ### ARMCC 编译器注意事项
 

@@ -23,7 +23,7 @@ uint8_t Key_Flag[KEY_COUNT];            /* 按键事件标志数组 */
 
 /************************************************************
  * 函 数 名: Key_Init
- * 功能说明: 初始化 KEY1~KEY4（PA4~PA7）为上拉输入
+ * 功能说明: 初始化 KEY3~KEY4（PA6~PA7）为上拉输入
  * 参    数: 无
  * 返 回 值: 无
 ************************************************************/
@@ -31,8 +31,6 @@ void Key_Init(void)
 {
     rcu_periph_clock_enable(RCU_GPIOA);
 
-    gpio_mode_set(GPIOA, GPIO_MODE_INPUT, GPIO_PUPD_PULLUP, GPIO_PIN_4);  /* KEY1 - PA4 */
-    gpio_mode_set(GPIOA, GPIO_MODE_INPUT, GPIO_PUPD_PULLUP, GPIO_PIN_5);  /* KEY2 - PA5 */
     gpio_mode_set(GPIOA, GPIO_MODE_INPUT, GPIO_PUPD_PULLUP, GPIO_PIN_6);  /* KEY3 - PA6 */
     gpio_mode_set(GPIOA, GPIO_MODE_INPUT, GPIO_PUPD_PULLUP, GPIO_PIN_7);  /* KEY4 - PA7 */
 }
@@ -40,17 +38,13 @@ void Key_Init(void)
 /************************************************************
  * 函 数 名: Key_GetState
  * 功能说明: 读取指定按键的当前物理状态
- * 参    数: n - 按键编号（KEY_1 ~ KEY_4）
+ * 参    数: n - 按键编号（KEY_3 ~ KEY_4）
  * 返 回 值: KEY_PRESSED 或 KEY_UNPRESSED
 ************************************************************/
 static uint8_t Key_GetState(uint8_t n)
 {
     switch (n)
     {
-        case KEY_1:
-            return (gpio_input_bit_get(GPIOA, GPIO_PIN_4) == RESET) ? KEY_PRESSED : KEY_UNPRESSED;
-        case KEY_2:
-            return (gpio_input_bit_get(GPIOA, GPIO_PIN_5) == RESET) ? KEY_PRESSED : KEY_UNPRESSED;
         case KEY_3:
             return (gpio_input_bit_get(GPIOA, GPIO_PIN_6) == RESET) ? KEY_PRESSED : KEY_UNPRESSED;
         case KEY_4:
@@ -63,7 +57,7 @@ static uint8_t Key_GetState(uint8_t n)
 /************************************************************
  * 函 数 名: Key_Check
  * 功能说明: 检测指定按键是否发生指定事件，读取后自动清除（HOLD 除外）
- * 参    数: n    - 按键编号（KEY_1 ~ KEY_4）
+ * 参    数: n    - 按键编号（KEY_3 ~ KEY_4）
  *           Flag - 事件类型（KEY_SINGLE / KEY_DOUBLE / KEY_LONG 等）
  * 返 回 值: 1 = 事件发生，0 = 未发生
 ************************************************************/

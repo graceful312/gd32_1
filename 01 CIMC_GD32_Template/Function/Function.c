@@ -24,6 +24,7 @@ void System_Init(void)
     Serial_Init();              // USART2 串口初始化
     Timer1_Init();              // Timer1 初始化（1kHz 中断）
     ADC_port_init();            // 内部 ADC 初始化（PC0）
+    DAC_Init();                 // DAC 初始化（PA4/PA5）
     GD30AD3344_Init();          // GD30AD3344 外部 ADC 初始化
     RTC_Init();                 // RTC 实时时钟初始化
     spi_flash_init();           // 外部 SPI Flash 初始化
@@ -38,8 +39,12 @@ void System_Init(void)
 ************************************************************/
 void UsrFunction(void)
 {
+    
     while (1)
     {
+        DAC_SetValue(0,2000);
+        DAC_SetValue(1,4095);
+        OLED_ShowNum(0,0,ADC_Read(),4,16);
         OLED_Refresh();         // 刷新 OLED 显存
     }
 }

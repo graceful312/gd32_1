@@ -13,12 +13,10 @@
 
 /************************* 按键定义 *************************/
 
-#define KEY_COUNT               4
+#define KEY_COUNT               2
 
-#define KEY_1                   0       /* KEY1 - PA4（与 LED1 共用引脚） */
-#define KEY_2                   1       /* KEY2 - PA5（与 LED2 共用引脚） */
-#define KEY_3                   2       /* KEY3 - PA6 */
-#define KEY_4                   3       /* KEY4 - PA7 */
+#define KEY_3                   0       /* KEY3 - PA6 */
+#define KEY_4                   1       /* KEY4 - PA7 */
 
 /************************* 事件标志 *************************/
 
