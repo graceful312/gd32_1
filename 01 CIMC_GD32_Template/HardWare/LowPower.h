@@ -27,8 +27,13 @@
 #define LP_REASON_DEEPSLEEP 1       /* 从 Deep-sleep 唤醒 */
 #define LP_REASON_STANDBY   2       /* 从 Standby 唤醒（唤醒 = 复位） */
 
+/************************* 变量定义 *************************/
+
+extern uint8_t LP_WakeupReason;     /* 唤醒原因（LP_REASON_xxx） */
+
 /************************* 函数声明 *************************/
 
+void LP_Init(void);                                          /* 低功耗模块初始化 */
 void LP_EnterDeepSleep(uint8_t wakeup_src, uint16_t rtc_sec);   /* 进入深度睡眠 */
 void LP_EnterStandby(uint8_t wakeup_src, uint16_t rtc_sec);     /* 进入待机模式 */
 uint8_t LP_GetWakeupReason(void);                                /* 获取唤醒原因 */

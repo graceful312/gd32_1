@@ -9,10 +9,6 @@
 #include "Function.h"
 #include "../FatFs/FatFs.h"
 
-/************************* 全局变量 *************************/
-
-uint8_t LP_WakeupReason = LP_REASON_POWERON;    /* 唤醒原因（由 LP_GetWakeupReason 设置） */
-
 /************************************************************
  * 函 数 名: System_Init
  * 功能说明: 系统初始化，依次配置所有外设
@@ -21,9 +17,7 @@ uint8_t LP_WakeupReason = LP_REASON_POWERON;    /* 唤醒原因（由 LP_GetWake
 ************************************************************/
 void System_Init(void)
 {
-    /* 检测唤醒来源（需先使能 PMU 时钟才能读取 PMU 标志） */
-    rcu_periph_clock_enable(RCU_PMU);
-    LP_WakeupReason = LP_GetWakeupReason();
+    LP_Init();                  // 低功耗模块初始化（使能PMU时钟，检测唤醒来源）
 
     systick_config();           // 系统时钟配置（168MHz）
     Key_Init();                 // 按键 GPIO 初始化
