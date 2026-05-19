@@ -27,7 +27,6 @@
 #include "GD30AD3344.h"   /* GD30AD3344外部ADC芯片驱动 */
 #include "RTC.h"          /* RTC实时时钟模块 */
 #include "SPI_Flash.h"    /* 外部 SPI Flash 驱动 */
-#include "FatFs.h"        /* FatFs 文件系统模块 */
 extern uint32_t i;
 
 #endif

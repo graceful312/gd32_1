@@ -4,9 +4,8 @@
 /*------------------------------------------------------------------------*/
 
 #include <stdlib.h>		/* ANSI memory controls */
-#include <malloc.h>		/* ANSI memory controls */
 
-#include "../ff.h"
+#include "ff.h"
 
 
 #if _FS_REENTRANT
