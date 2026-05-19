@@ -129,7 +129,6 @@ DRESULT disk_write(BYTE drv, const BYTE *buff, DWORD sector, BYTE count)
     uint32_t flash_sec_base;    /* Flash 扇区起始地址 */
     uint32_t offset_in_flash;   /* 逻辑扇区在 Flash 扇区内的字节偏移 */
     uint32_t byte_addr;         /* 目标字节地址 */
-    uint32_t i;
 
     /* 参数检查 */
     if (drv != 0 || buff == NULL || count == 0) {
