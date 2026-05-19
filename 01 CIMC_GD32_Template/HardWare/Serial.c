@@ -20,14 +20,14 @@ uint8_t digital_values[SENSOR_COUNT] = {0};
 uint16_t analog_values[SENSOR_COUNT] = {0};
 
 /**
-  * 函    数：串口初始化（使用 USART0，PA9 TX，PA10 RX）
+  * 函    数：串口初始化（USART2，PB10 TX，PC5 RX，115200）
   * 参    数：无
   * 返 回 值：无
   */
 void Serial_Init(void)
 {
     /* 开启时钟 */
-    rcu_periph_clock_enable(RCU_GPIOC);      // GPIOA 时钟
+    rcu_periph_clock_enable(RCU_GPIOC);      // GPIOC 时钟
 		rcu_periph_clock_enable(RCU_GPIOB);
     rcu_periph_clock_enable(RCU_USART2);     // USART2 时钟
 
@@ -52,7 +52,7 @@ void Serial_Init(void)
     usart_hardware_flow_cts_config(USART2, USART_CTS_DISABLE);
     usart_receive_config(USART2, USART_RECEIVE_ENABLE);      // 使能接收
     usart_transmit_config(USART2, USART_TRANSMIT_ENABLE);    // 使能发送
-    usart_enable(USART2);                                     // 使能 USART0
+    usart_enable(USART2);                                     // 使能 USART2
 
     /* 使能接收中断 */
     usart_interrupt_enable(USART2, USART_INT_RBNE);           // 接收缓冲区非空中断
@@ -62,7 +62,7 @@ void Serial_Init(void)
 }
 
 /**
-  * 函    数：串口发送一个字节（使用 USART0）
+  * 函    数：串口发送一个字节
   * 参    数：Byte 要发送的字节
   * 返 回 值：无
   */
@@ -247,7 +247,7 @@ void Deal_Analog_Data(void) {
 }
 
 /**
-  * 函    数：USART0 中断服务函数
+  * 函    数：USART2 中断服务函数
   * 参    数：无
   * 返 回 值：无
   */
