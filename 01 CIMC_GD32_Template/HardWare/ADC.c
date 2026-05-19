@@ -54,3 +54,17 @@ void ADC_port_init(void)
     adc_software_trigger_enable(ADC0, ADC_ROUTINE_CHANNEL);                // 软件触发首次转换
 }
 
+/************************************************************
+ * 函 数 名: ADC_Read
+ * 功能说明: 读取 ADC 转换结果
+ *          连续转换模式下，每次调用自动等待下一次转换完成
+ * 参    数: 无
+ * 返 回 值: 12 位转换结果（0~4095），对应 0~3.3V
+************************************************************/
+uint16_t ADC_Read(void)
+{
+    adc_flag_clear(ADC0, ADC_FLAG_EOC);                    // 清除转换完成标志
+    while (adc_flag_get(ADC0, ADC_FLAG_EOC) == RESET) {}   // 等待转换完成
+    return (uint16_t)ADC_RDATA(ADC0);                      // 读取 12 位转换结果
+}
+

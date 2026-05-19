@@ -11,7 +11,8 @@
 
 #include "HeaderFiles.h"
 
-void ADC_port_init(void);    // ADC引脚和时钟初始化，启动转换
-void ADC_Init(void);         // ADC外设初始化（复位、模式、通道、触发、使能、校准）
+void ADC_port_init(void);       // ADC引脚和时钟初始化，启动转换
+void ADC_Init(void);            // ADC外设初始化（复位、模式、通道、触发、使能、校准）
+uint16_t ADC_Read(void);        // 读取 ADC 转换结果（12位，0~4095）
 
 #endif
