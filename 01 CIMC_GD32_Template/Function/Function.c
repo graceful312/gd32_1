@@ -11,6 +11,7 @@ void System_Init(void)
     Timer1_Init();
     GD30AD3344_Init();    // GD30AD3344外部ADC初始化
 	RTC_Init();           // RTC实时时钟初始化
+    spi_flash_init();     // 外部 SPI Flash 初始化
 }
 
 
