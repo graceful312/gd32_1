@@ -24,6 +24,7 @@
 void System_Init(void);      	// 系统初始化
 void UsrFunction(void);         // 用户函数
 void Init_LED_Stat(void);		// 系统初始化时用LED显示状态
+void FatFs_Init(void);          // FatFs 文件系统初始化
 
 #endif
 

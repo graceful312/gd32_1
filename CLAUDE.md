@@ -21,6 +21,7 @@ CIMC 2026 工业嵌入式系统开发竞赛项目，目标芯片 **GD32F470VET6*
 CMSIS/          → ARM Cortex-M4 核心头文件 + GigaDevice 设备头文件 (gd32f4xx.h)
 Library/        → GD32F4xx 标准外设库 V2.6.4（28 个外设驱动）
 HardWare/       → 板级驱动：LED、Key、OLED、Serial、ADC、Timer、GD30AD3344、RTC、SPI_Flash
+FatFs/          → FatFs R0.09 文件系统（ff.c/h + diskio.c 对接 SPI Flash）
 Function/       → 应用逻辑：System_Init()、UsrFunction()
 User/           → main.c 入口、中断处理 (gd32f4xx_it.c)、systick
 HeaderFiles/    → HeaderFiles.h，统一包含所有头文件
@@ -32,7 +33,7 @@ System/         → 空目录
 
 ### 程序入口
 
-`main()` → `System_Init()`（初始化 systick、按键、LED、OLED、USART2、Timer1、GD30AD3344、RTC、SPI_Flash）→ `UsrFunction()`（主循环，调用 `OLED_Refresh()`）。
+`main()` → `System_Init()`（初始化 systick、按键、LED、OLED、USART2、Timer1、GD30AD3344、RTC、SPI_Flash、FatFs）→ `UsrFunction()`（主循环，调用 `OLED_Refresh()`）。
 
 ### 关键驱动
 
@@ -45,6 +46,7 @@ System/         → 空目录
 - **GD30AD3344** (`HardWare/GD30AD3344.c`)：外部 ADC 芯片，通过 SPI1（PB12~PB15）通信。CS=PB12，SPI 初始化和引脚复用配置在 `GD30AD3344_spi.h` 中以宏定义封装，修改宏即可切换 SPI 端口。
 - **RTC** (`HardWare/RTC.c`)：实时时钟模块，使用外部 32.768kHz LXTAL 晶振，预分频 1Hz。支持日历读写（BCD 编码）、闹钟 0/1（带中断）、唤醒定时器、备份寄存器。中断处理函数（`RTC_Alarm_IRQHandler`、`RTC_WKUP_IRQHandler`）直接写在 RTC.c 中，不修改 `gd32f4xx_it.c`。
 - **SPI Flash** (`HardWare/SPI_Flash.c`)：外部 NOR Flash（GD25Q40ESIGR，4Mbit/512KB），SPI1 通信。支持扇区擦除（4KB）、整片擦除、页写入（256B）、任意长度读写、ID 读取。与 GD30AD3344 共用 SPI1 总线，通过 CS 引脚区分。
+- **FatFs** (`FatFs/`)：FAT 文件系统 R0.09，底层通过 `diskio.c` 对接 SPI Flash。512B 逻辑扇区，1024 个扇区（512KB）。首次使用自动格式化。`f_mount()`, `f_open()`, `f_read()`, `f_write()`, `f_mkfs()` 等 API 可用。配置 `ffconf.h`：代码页 936（GBK 中文），已开启 `_USE_MKFS`。
 
 ### 引脚分配
 
