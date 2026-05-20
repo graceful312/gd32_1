@@ -17,6 +17,9 @@
 ************************************************************/
 void System_Init(void)
 {
+    /* 重定位中断向量表到应用程序区域（配合 Bootloader 使用） */
+    SCB->VTOR = 0x08010000U;
+
     LP_Init();                  // 低功耗模块初始化（使能PMU时钟，检测唤醒来源）
 
     systick_config();           // 系统时钟配置（168MHz）
@@ -24,15 +27,6 @@ void System_Init(void)
     LED_Init();                 // LED GPIO 初始化
     OLED_Init();                // OLED 显示屏初始化
     Serial_Init();              // USART2 串口初始化
-
-    /* 串口就绪后打印唤醒来源 */
-    if (LP_WakeupReason == LP_REASON_STANDBY)
-        printf("[LP] Wakeup from Standby (reset)\r\n");
-    else if (LP_WakeupReason == LP_REASON_DEEPSLEEP)
-        printf("[LP] Wakeup from Deep-sleep\r\n");
-    else
-        printf("[LP] Power-on reset\r\n");
-
     Timer1_Init();              // Timer1 初始化（1kHz 中断）
     ADC_port_init();            // 内部 ADC 初始化（PC0）
     DAC_Init();                 // DAC 初始化（PA4/PA5）
